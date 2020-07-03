@@ -1,5 +1,5 @@
 [package]
-name = "ourrecipes-api"
+name = "ourrecipesapi"
 version = "0.1.0"
 authors = ["ethanwc <ethanwc@u.washington.edu>"]
 edition = "2018"
