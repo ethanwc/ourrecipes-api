@@ -1,4 +1,5 @@
-use crate::{collection, model::{Human, Database, NewHuman}};
+use crate::{collection, model::{Database}, models::human::{Human, NewHuman}};
+
 use juniper::{FieldError, FieldResult};
 use bson::doc;
 

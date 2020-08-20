@@ -1,5 +1,5 @@
-use example_rocket_lamb_api;
+use ourrecipes_api;
 
 fn main() {
-    example_rocket_lamb_api::rocket().launch();
+    ourrecipes_api::rocket().launch();
 }
