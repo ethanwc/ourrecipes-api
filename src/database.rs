@@ -2,7 +2,7 @@ use mongodb::{Client, Collection};
 
 fn create_mongo_client() -> Client {
     Client::with_uri_str(
-        "mongodb+srv://ourrecipes-temp:Vpzk0A4RUxHRsWYB@cluster0.1bw4q.mongodb.net",
+        "mongodb+srv://wtf:DtnGOXLlEy2GxLwO@cluster0.1bw4q.mongodb.net",
     )
     .expect("Failed to initialize standalone client.")
 }

@@ -1,10 +1,11 @@
 use crate::{
     database::Database,
-    models::human::{Human, NewHuman},
+    models::{recipe, human::{Human, NewHuman}},
     services::human::{create_human, get_human},
 };
 
 use juniper::FieldResult;
+use recipe::NewRecipe;
 
 // The root query object of the schema
 pub struct Query;
@@ -15,7 +16,7 @@ pub struct Query;
 )]
 impl Query {
     #[graphql(arguments(id(description = "id of the human")))]
-    fn human(database: &Database, id: String) -> FieldResult<Vec<Human>> {
+    fn human(database: &Database, id: String, recipe: NewRecipe) -> FieldResult<Vec<Human>> {
         get_human(database, &id)
     }
 }

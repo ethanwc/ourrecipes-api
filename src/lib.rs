@@ -64,8 +64,11 @@ fn post_graphql_handler(
 }
 
 pub fn rocket() -> Rocket {
-    rocket::ignite().manage(Database::init()).mount(
-        "/",
-        routes![auth, graphiql, get_graphql_handler, post_graphql_handler],
-    )
+    rocket::ignite()
+        .manage(Database::init())
+        .manage(Schema::new(Query, MutationRoot))
+        .mount(
+            "/",
+            routes![auth, graphiql, get_graphql_handler, post_graphql_handler],
+        )
 }
