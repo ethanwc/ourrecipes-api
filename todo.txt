@@ -1,8 +1,0 @@
-create rust api via serverless
-create amazon cignito sign in flow
-connect mongodb to graphql
-https://lib.rs/crates/graphql-mongodb-boilerplate
-https://aws.amazon.com/cognito/
-https://docs.rs/mongodb/1.0.0/mongodb/
-https://github.com/mongodb/mongo-rust-driver
-https://docs.rs/crate/graphql-mongodb-boilerplate/0.1.0

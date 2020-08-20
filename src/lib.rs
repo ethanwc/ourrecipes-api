@@ -1,33 +1,20 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
-use futures::executor::block_on;
-use std::{fs, io, path::Path};
-use jsonwebtokens_cognito::KeySet;
-use mongodb::{
-    bson::{doc, Bson},
-    sync::Client,
-};
+use rocket::{Rocket, routes, get};
 use tokio::runtime::Runtime;
+use jsonwebtokens_cognito::KeySet;
 
 
+mod model;
+mod schema;
 
-#[macro_use]
-extern crate rocket;
-
-use rocket::{http::ContentType, response::Content, Rocket};
-
-#[get("/")]
-fn hello() -> &'static str {
-    "Hello world"
-}
-
-// /rocket returns binary data (a PNG image)
-#[get("/rocket")]
-fn pic() -> Content<&'static [u8]> {
-    let bytes = include_bytes!("../static/rocket.png");
-    let content_type = ContentType::new("image", "png");
-    Content(content_type, bytes)
-}
+use juniper::{RootNode};
+use model::Database;
+use rocket::response::content;
+use rocket::State;
+use schema::{MutationRoot, Query};
+use mongodb::{Client, Collection};
+use lazy_static::lazy_static;
 
 #[get("/auth")]
 fn auth() -> &'static str {
@@ -59,43 +46,50 @@ async fn test3() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-#[get("/dbtest")]
-fn db() -> &'static str {
-    let future = test2();
-    block_on(future);
-    "Db Test Passed"
+type Schema = RootNode<'static, Query, MutationRoot>;
+
+#[rocket::get("/")]
+fn graphiql() -> content::Html<String> {
+    juniper_rocket::graphiql_source("/graphql")
 }
 
-async fn test2() -> Result<(), Box<dyn std::error::Error>> {
-    let client = Client::with_uri_str("mongodb+srv://ourrecipes-temp:Vpzk0A4RUxHRsWYB@cluster0.1bw4q.mongodb.net")?;
-    let database = client.database("ourrecipes");
-    let collection = database.collection("books");
-    
-    let docs = vec![
-        doc! { "title": "1984", "author": "George Orwell" },
-        doc! { "title": "Animal Farm", "author": "George Orwell" },
-        doc! { "title": "The Great Gatsby", "author": "F. Scott Fitzgerald" },
-    ];
-    
-    // Insert some documents into the "mydb.books" collection.
-    collection.insert_many(docs, None)?;
-    
-    let cursor = collection.find(doc! { "author": "George Orwell" }, None)?;
-    for result in cursor {
-        match result {
-            Ok(document) => {
-                if let Some(title) = document.get("title").and_then(Bson::as_str) {
-                    println!("title: {}", title);
-                } else {
-                    println!("no title found");
-                }
-            }
-            Err(e) => return Err(e.into()),
-        }
-    }
-    Ok(())
+#[rocket::get("/graphql?<request>")]
+fn get_graphql_handler(
+    context: State<Database>,
+    request: juniper_rocket::GraphQLRequest,
+    schema: State<Schema>,
+) -> juniper_rocket::GraphQLResponse {
+    request.execute(&schema, &context)
 }
+
+#[rocket::post("/graphql", data = "<request>")]
+fn post_graphql_handler(
+    context: State<Database>,
+    request: juniper_rocket::GraphQLRequest,
+    schema: State<Schema>,
+) -> juniper_rocket::GraphQLResponse {
+    request.execute(&schema, &context)
+}
+
+
+lazy_static! {
+    pub static ref MONGO: Client = create_mongo_client();
+}
+
+
+fn create_mongo_client() -> Client {
+    Client::with_uri_str("mongodb+srv://username:password@cluster.mongodb.net")
+    .expect("Failed to initialize standalone client.")
+
+}
+
+
+
+fn collection(coll_name: &str) -> Collection {
+    MONGO.database("collection").collection(coll_name)
+}
+
 
 pub fn rocket() -> Rocket {
-    rocket::ignite().mount("/", routes![hello, pic, db, auth])
+    rocket::ignite().mount("/", routes![auth, graphiql, get_graphql_handler, post_graphql_handler])
 }
