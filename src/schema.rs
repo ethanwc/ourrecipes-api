@@ -1,11 +1,16 @@
 use crate::{
     database::Database,
-    models::{recipe, human::{Human, NewHuman}},
-    services::human::{create_human, get_human},
+    models::{
+        human::{Human, NewHuman},
+        user::{NewUser, User},
+    },
+    services::{
+        human::{create_human, get_human},
+        user::{create_user, get_user},
+    },
 };
 
 use juniper::FieldResult;
-use recipe::NewRecipe;
 
 // The root query object of the schema
 pub struct Query;
@@ -16,8 +21,12 @@ pub struct Query;
 )]
 impl Query {
     #[graphql(arguments(id(description = "id of the human")))]
-    fn human(database: &Database, id: String, recipe: NewRecipe) -> FieldResult<Vec<Human>> {
+    fn human(database: &Database, id: String) -> FieldResult<Vec<Human>> {
         get_human(database, &id)
+    }
+    #[graphql(arguments(id(description = "id of the user")))]
+    fn user(database: &Database, id: String) -> FieldResult<Vec<User>> {
+        get_user(database, &id)
     }
 }
 
@@ -31,5 +40,8 @@ pub struct MutationRoot;
 impl MutationRoot {
     fn create_human(database: &Database, new_human: NewHuman) -> FieldResult<Human> {
         create_human(database, new_human)
+    }
+    fn create_human(database: &Database, new_user: NewUser) -> FieldResult<User> {
+        create_user(database, new_user)
     }
 }
