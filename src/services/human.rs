@@ -1,14 +1,14 @@
 use crate::{
+    auth,
     database::Database,
-    models::human::{Human, NewHuman}, auth,
+    models::human::{Human, NewHuman},
 };
 use bson::doc;
-use juniper::FieldError;
+use juniper::{graphql_value, FieldError};
 
 pub fn create_human(db: &Database, new_human: NewHuman) -> Result<Human, FieldError> {
     let coll = db.collection("human");
     let serialized_member = bson::to_bson(&new_human)?;
-
 
     if let bson::Bson::Document(document) = serialized_member {
         coll.insert_one(document, None)?;
@@ -24,10 +24,9 @@ pub fn create_human(db: &Database, new_human: NewHuman) -> Result<Human, FieldEr
     }
 }
 
-// verify token via auth in create routes only 
+// verify token via auth in create routes only
 
 pub fn get_human(db: &Database, id: &str) -> Result<Vec<Human>, FieldError> {
-
     // call auth function in here i guess
     let coll = db.collection("human");
     let filter = doc! {"id" : id};
@@ -35,8 +34,16 @@ pub fn get_human(db: &Database, id: &str) -> Result<Vec<Human>, FieldError> {
 
     let mut results: Vec<Human> = vec![];
 
-    println!("auth res: {}", auth());
-    
+    let authR = auth();
+
+    if !authR.auth {
+        return Err(FieldError::new(
+            "Access requested was declined: 401",
+            graphql_value!({ "internal_error": "Connection refused" }),
+        ));
+    }
+
+    println!("{}:{}", authR.auth, authR.user_id);
 
     for result in cursor {
         match result {
