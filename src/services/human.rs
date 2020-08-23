@@ -1,6 +1,6 @@
 use crate::{
     database::Database,
-    models::human::{Human, NewHuman},
+    models::human::{Human, NewHuman}, auth,
 };
 use bson::doc;
 use juniper::FieldError;
@@ -34,6 +34,9 @@ pub fn get_human(db: &Database, id: &str) -> Result<Vec<Human>, FieldError> {
     let cursor = coll.find(filter, None).unwrap();
 
     let mut results: Vec<Human> = vec![];
+
+    println!("auth res: {}", auth());
+    
 
     for result in cursor {
         match result {

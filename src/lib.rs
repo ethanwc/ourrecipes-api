@@ -2,7 +2,7 @@
 
 use jsonwebtokens_cognito::{Error, KeySet};
 use juniper::RootNode;
-use rocket::{get, response::content, routes, Rocket, State};
+use rocket::{response::{content}, routes, Rocket, State};
 use tokio::runtime::Runtime;
 
 mod database;
@@ -13,18 +13,12 @@ mod services;
 use database::Database;
 use schema::{MutationRoot, Query};
 
-#[get("/auth")]
-fn auth() -> Result<String, Error> {
+fn auth() -> bool {
     let v = Runtime::new()
         .expect("Failed to create Tokio runtime")
         .block_on(check_auth())
         .expect("Authorization Check Failed!");
-
-
-        print!("{}", v);
-
-
-        Ok(v.to_string())
+        true
 }
 
 async fn check_auth() -> Result<bool, Error> {
@@ -71,6 +65,6 @@ pub fn rocket() -> Rocket {
         .manage(Schema::new(Query, MutationRoot))
         .mount(
             "/",
-            routes![auth, graphiql, get_graphql_handler, post_graphql_handler],
+            routes![graphiql, get_graphql_handler, post_graphql_handler],
         )
 }
