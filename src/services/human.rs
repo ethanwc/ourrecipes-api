@@ -9,6 +9,7 @@ pub fn create_human(db: &Database, new_human: NewHuman) -> Result<Human, FieldEr
     let coll = db.collection("human");
     let serialized_member = bson::to_bson(&new_human)?;
 
+
     if let bson::Bson::Document(document) = serialized_member {
         coll.insert_one(document, None)?;
         let member_document = coll
@@ -23,7 +24,11 @@ pub fn create_human(db: &Database, new_human: NewHuman) -> Result<Human, FieldEr
     }
 }
 
+// verify token via auth in create routes only 
+
 pub fn get_human(db: &Database, id: &str) -> Result<Vec<Human>, FieldError> {
+
+    // call auth function in here i guess
     let coll = db.collection("human");
     let filter = doc! {"id" : id};
     let cursor = coll.find(filter, None).unwrap();
