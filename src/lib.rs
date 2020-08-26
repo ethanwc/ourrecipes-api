@@ -1,16 +1,15 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
-use rocket::{ routes, Rocket};
-use tokio::runtime::Runtime;
-use rocket_contrib::json::Json;
-use mongodb::{Client, Collection};
 use lazy_static::lazy_static;
+use mongodb::{Client, Collection};
+use rocket::{routes, Rocket};
+use rocket_contrib::json::Json;
 use serde::{Deserialize, Serialize};
+use bson::doc;
+use tokio::runtime::Runtime;
 
- 
 #[macro_use]
 extern crate rocket;
-
 
 lazy_static! {
     pub static ref MONGO: Client = create_mongo_client();
@@ -18,15 +17,12 @@ lazy_static! {
 
 fn create_mongo_client() -> Client {
     Client::with_uri_str("mongodb+srv://username:password@cluster.mongodb.net")
-    .expect("Failed to initialize standalone client.")
+        .expect("Failed to initialize standalone client.")
 }
 
 fn collection(coll_name: &str) -> Collection {
     MONGO.database("collection").collection(coll_name)
 }
-
-
-
 
 #[derive(Serialize, Deserialize)]
 pub struct NewUser {
@@ -41,10 +37,8 @@ fn add_user(user: Json<NewUser>) {
     println!("{}", user.userName);
 }
 
-use bson::doc;
 
-
-async fn test3(new_user: NewUser) -> Result<(), Box<dyn std::error::Error>> { 
+async fn test3(new_user: NewUser) -> Result<(), Box<dyn std::error::Error>> {
     let coll = collection("user");
     let serialized_member = bson::to_bson(&new_user)?;
 
@@ -63,22 +57,17 @@ async fn test3(new_user: NewUser) -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
-
-#[post("/abc", data = "<user>")]
+#[post("/", data = "<user>")]
 fn add_user2(user: Json<NewUser>) {
     let user2 = NewUser {
-        userName: user.userName.to_owned()
+        userName: user.userName.to_owned(),
     };
-     Runtime::new()
-    .expect("Failed to create Tokio runtime")
-    .block_on(test3(user2)).expect("asdf");
+    Runtime::new()
+        .expect("Failed to create Tokio runtime")
+        .block_on(test3(user2))
+        .expect("asdf");
 }
 
-
 pub fn rocket() -> Rocket {
-    rocket::ignite()
-        .mount(
-            "/",
-            routes![add_user],
-        )
+    rocket::ignite().mount("/", routes![add_user2])
 }
