@@ -23,7 +23,7 @@ fn auth() -> AuthResult {
 }
 
 /**
- * Auth Result struct to wrap the auth result with userid for authentication and authorization
+ * Auth Result struct to wrap the auth result with userid for authenteication and authorization
  */
 pub struct AuthResult {
     auth: bool,

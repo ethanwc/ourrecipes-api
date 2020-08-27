@@ -3,10 +3,10 @@ use serde::{Deserialize, Serialize};
 // Ingredient type
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Ingredient {
-    id: String,
-    name: String,
-    amount: i32,
-    unit: String,
+    pub(crate) id: String,
+    pub(crate) name: String,
+    pub(crate) amount: i32,
+    pub(crate) unit: String,
 }
 
 #[derive(Serialize, Deserialize, juniper::GraphQLInputObject)]

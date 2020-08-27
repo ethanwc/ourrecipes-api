@@ -1,11 +1,13 @@
 use crate::{
     auth,
     database::Database,
-    models::{user::{User, NewUser}, human::{Human, NewHuman}},
+    models::{
+        human::{Human, NewHuman},
+        user::{NewUser, User},
+    },
 };
 use bson::doc;
 use juniper::{graphql_value, FieldError};
-
 
 pub fn create_user(db: &Database, new_user: NewUser) -> Result<User, FieldError> {
     let coll = db.collection("user");
@@ -44,7 +46,6 @@ pub fn create_human(db: &Database, new_human: NewHuman) -> Result<Human, FieldEr
     }
 }
 
-// verify token via auth in create routes only
 
 pub fn get_human(db: &Database, id: &str) -> Result<Vec<Human>, FieldError> {
     // call auth function in here i guess
