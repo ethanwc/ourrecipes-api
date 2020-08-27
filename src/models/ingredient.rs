@@ -11,9 +11,9 @@ pub struct Ingredient {
 
 #[derive(Serialize, Deserialize, juniper::GraphQLInputObject)]
 pub struct NewIngredient {
-    name: String,
-    amount: i32,
-    unit: String,
+    pub name: String,
+    pub amount: i32,
+    pub unit: String,
 }
 
 #[juniper::object(description = "A ingredient")]

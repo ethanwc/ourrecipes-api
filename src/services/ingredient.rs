@@ -5,26 +5,26 @@ use crate::{
 use bson::doc;
 use juniper::FieldError;
 
-use uuid::Uuid;
 
 pub fn create_ingredient(
     db: &Database,
     new_ingredient: NewIngredient,
 ) -> Result<Ingredient, FieldError> {
-    let id_ingredient = NewIngredient {
+    let id_ingredient = Ingredient {
+        id: "asdf".to_string(),
         amount: new_ingredient.amount,
         name: new_ingredient.name,
         unit: new_ingredient.unit,
     };
 
     let coll = db.collection("ingredient");
-    let serialized_member = bson::to_bson(&new_ingredient)?;
+    let serialized_member = bson::to_bson(&id_ingredient)?;
 
     if let bson::Bson::Document(document) = serialized_member {
         coll.insert_one(document, None)?;
         //todo: use actual user id
         let ingredient_document = coll
-            .find_one(Some(doc! { "id" => "asdf" }), None)?
+            .find_one(Some(doc! { "id" => id_ingredient.id }), None)?
             .expect("Document not found");
 
         let ingredient = bson::from_bson(bson::Bson::Document(ingredient_document))?;
