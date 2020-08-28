@@ -11,9 +11,9 @@ mod schema;
 mod services;
 
 use database::Database;
-use schema::{MutationRoot, Query};
 use lazy_static::lazy_static;
-use mongodb::{Collection, Client};
+use mongodb::{Client, Collection};
+use schema::{MutationRoot, Query};
 
 fn auth() -> AuthResult {
     let v = Runtime::new()
@@ -88,15 +88,13 @@ fn post_graphql_handler(
     request.execute(&schema, &context)
 }
 
-
 lazy_static! {
     pub static ref MONGO: Client = create_mongo_client();
 }
 
 fn create_mongo_client() -> Client {
     Client::with_uri_str("mongodb+srv://wtf:DtnGOXLlEy2GxLwO@cluster0.1bw4q.mongodb.net")
-    .expect("Failed to initialize standalone client.")
-
+        .expect("Failed to initialize standalone client.")
 }
 
 fn collection(coll_name: &str) -> Collection {

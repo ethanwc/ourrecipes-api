@@ -1,11 +1,8 @@
-use crate::{
-    database::Database,
-    models::user::{NewUser, User}, collection,
-};
+use crate::{collection, models::user::User};
 use bson::doc;
 use juniper::FieldError;
 
-pub fn get_user(db: &Database, id: &str) -> Result<Vec<User>, FieldError> {
+pub fn get_user(id: &str) -> Result<Vec<User>, FieldError> {
     let coll = collection("user");
     let filter = doc! {"id" : id};
     let cursor = coll.find(filter, None).unwrap();

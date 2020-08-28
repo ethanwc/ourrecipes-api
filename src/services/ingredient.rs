@@ -1,15 +1,11 @@
 use crate::{
-    database::Database,
-    models::ingredient::{Ingredient, NewIngredient}, collection,
+    collection,
+    models::ingredient::{Ingredient, NewIngredient},
 };
 use bson::doc;
 use juniper::FieldError;
 
-
-pub fn create_ingredient(
-    db: &Database,
-    new_ingredient: NewIngredient,
-) -> Result<Ingredient, FieldError> {
+pub fn create_ingredient(new_ingredient: NewIngredient) -> Result<Ingredient, FieldError> {
     let id_ingredient = Ingredient {
         id: "asdf".to_string(),
         amount: new_ingredient.amount,

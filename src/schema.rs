@@ -1,12 +1,12 @@
 use crate::{
     database::Database,
     models::{
-        human::Human,
-        ingredient::{Ingredient, NewIngredient}, user::User,
+        ingredient::{Ingredient, NewIngredient},
+        user::User,
     },
     services::{
-        human::get_human,
-        ingredient::{create_ingredient, get_ingredient}, user::get_user,
+        ingredient::{create_ingredient, get_ingredient},
+        user::get_user,
     },
 };
 
@@ -21,8 +21,8 @@ pub struct Query;
 )]
 impl Query {
     #[graphql(arguments(id(description = "id of the user")))]
-    fn user(database: &Database, id: String) -> FieldResult<Vec<User>> {
-        get_user(database, &id)
+    fn user(id: String) -> FieldResult<Vec<User>> {
+        get_user(&id)
     }
     #[graphql(arguments(id(description = "id of the ingredient")))]
     fn ingredient(id: String) -> FieldResult<Vec<Ingredient>> {
@@ -38,10 +38,7 @@ pub struct MutationRoot;
     Scalar = juniper::DefaultScalarValue,
 )]
 impl MutationRoot {
-    fn create_ingredient(
-        database: &Database,
-        new_ingredient: NewIngredient,
-    ) -> FieldResult<Ingredient> {
-        create_ingredient(database, new_ingredient)
+    fn create_ingredient(new_ingredient: NewIngredient) -> FieldResult<Ingredient> {
+        create_ingredient(new_ingredient)
     }
 }
