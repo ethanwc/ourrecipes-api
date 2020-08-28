@@ -1,6 +1,6 @@
 use crate::{
     database::Database,
-    models::ingredient::{Ingredient, NewIngredient},
+    models::ingredient::{Ingredient, NewIngredient}, collection,
 };
 use bson::doc;
 use juniper::FieldError;
@@ -17,7 +17,7 @@ pub fn create_ingredient(
         unit: new_ingredient.unit,
     };
 
-    let coll = db.collection("ingredient");
+    let coll = collection("ingredient");
     let serialized_member = bson::to_bson(&id_ingredient)?;
 
     if let bson::Bson::Document(document) = serialized_member {
@@ -35,8 +35,8 @@ pub fn create_ingredient(
     }
 }
 
-pub fn get_ingredient(db: &Database, id: &str) -> Result<Vec<Ingredient>, FieldError> {
-    let coll = db.collection("ingredient");
+pub fn get_ingredient(id: &str) -> Result<Vec<Ingredient>, FieldError> {
+    let coll = collection("ingredient");
     let filter = doc! {"id" : id};
     let cursor = coll.find(filter, None).unwrap();
 

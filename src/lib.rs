@@ -12,6 +12,8 @@ mod services;
 
 use database::Database;
 use schema::{MutationRoot, Query};
+use lazy_static::lazy_static;
+use mongodb::{Collection, Client};
 
 fn auth() -> AuthResult {
     let v = Runtime::new()
@@ -86,9 +88,24 @@ fn post_graphql_handler(
     request.execute(&schema, &context)
 }
 
+
+lazy_static! {
+    pub static ref MONGO: Client = create_mongo_client();
+}
+
+fn create_mongo_client() -> Client {
+    Client::with_uri_str("mongodb+srv://wtf:DtnGOXLlEy2GxLwO@cluster0.1bw4q.mongodb.net")
+    .expect("Failed to initialize standalone client.")
+
+}
+
+fn collection(coll_name: &str) -> Collection {
+    MONGO.database("collection").collection(coll_name)
+}
+
 pub fn rocket() -> Rocket {
     rocket::ignite()
-        .manage(Database::init())
+        .manage(Database::new())
         .manage(Schema::new(Query, MutationRoot))
         .mount(
             "/",

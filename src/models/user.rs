@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use super::ingredient::Ingredient;
+use crate::services::ingredient::get_ingredient;
 
 // User type
 #[derive(Serialize, Deserialize, Debug)]
@@ -48,23 +49,24 @@ impl User {
     //     &self.creationDate
     // }
     pub fn ingredients(&self) -> Vec<Ingredient> {
+        get_ingredient("157895bd-d323-48bb-8d20-7d251631a230").unwrap()
         
-        vec![Ingredient {
-            amount: 1,
-            id: "asdf".to_owned(),
-            name: "asdf".to_owned(),
-            unit: "asdf".to_owned(),
-        }, Ingredient {
-            amount: 1,
-            id: "asdf".to_owned(),
-            name: "asdf".to_owned(),
-            unit: "asdf".to_owned(),
-        }, Ingredient {
-            amount: 1,
-            id: "asdf".to_owned(),
-            name: "asdf".to_owned(),
-            unit: "asdf".to_owned(),
-        }]
+        // vec![Ingredient {
+        //     amount: 1,
+        //     id: "asdf".to_owned(),
+        //     name: "asdf".to_owned(),
+        //     unit: "asdf".to_owned(),
+        // }, Ingredient {
+        //     amount: 1,
+        //     id: "asdf".to_owned(),
+        //     name: "asdf".to_owned(),
+        //     unit: "asdf".to_owned(),
+        // }, Ingredient {
+        //     amount: 1,
+        //     id: "asdf".to_owned(),
+        //     name: "asdf".to_owned(),
+        //     unit: "asdf".to_owned(),
+        // }]
     }
     // pub fn recipes(&self) -> Vec<String> {
     //     self.recipes.to_owned()

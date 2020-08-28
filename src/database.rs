@@ -1,23 +1,14 @@
-use mongodb::{Client, Collection};
-
-fn create_mongo_client() -> Client {
-    Client::with_uri_str(
-        "mongodb+srv://wtf:DtnGOXLlEy2GxLwO@cluster0.1bw4q.mongodb.net",
-    )
-    .expect("Failed to initialize standalone client.")
-}
-
+/**
+ * Database State neccesary for rocket, wrap db connection inside of it or whatever you want.
+ */
 pub struct Database {
-    db: Client,
 }
+
 
 impl Database {
-    pub fn init() -> Database {
+
+    pub fn new() -> Database {
         Database {
-            db: create_mongo_client(),
         }
-    }
-    pub fn collection(&self, coll_name: &str) -> Collection {
-        self.db.database("collection").collection(&coll_name)
     }
 }

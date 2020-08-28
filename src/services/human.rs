@@ -4,13 +4,13 @@ use crate::{
     models::{
         human::{Human, NewHuman},
         user::{NewUser, User},
-    },
+    }, collection,
 };
 use bson::doc;
 use juniper::{graphql_value, FieldError};
 
 pub fn create_user(db: &Database, new_user: NewUser) -> Result<User, FieldError> {
-    let coll = db.collection("user");
+    let coll = collection("user");
     let serialized_member = bson::to_bson(&new_user)?;
 
     if let bson::Bson::Document(document) = serialized_member {
@@ -29,7 +29,7 @@ pub fn create_user(db: &Database, new_user: NewUser) -> Result<User, FieldError>
 }
 
 pub fn create_human(db: &Database, new_human: NewHuman) -> Result<Human, FieldError> {
-    let coll = db.collection("human");
+    let coll = collection("human");
     let serialized_member = bson::to_bson(&new_human)?;
 
     if let bson::Bson::Document(document) = serialized_member {
@@ -49,7 +49,7 @@ pub fn create_human(db: &Database, new_human: NewHuman) -> Result<Human, FieldEr
 
 pub fn get_human(db: &Database, id: &str) -> Result<Vec<Human>, FieldError> {
     // call auth function in here i guess
-    let coll = db.collection("human");
+    let coll = collection("human");
     let filter = doc! {"id" : id};
     let cursor = coll.find(filter, None).unwrap();
 

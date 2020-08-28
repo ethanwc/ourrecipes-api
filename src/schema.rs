@@ -25,8 +25,8 @@ impl Query {
         get_user(database, &id)
     }
     #[graphql(arguments(id(description = "id of the ingredient")))]
-    fn ingredient(database: &Database, id: String) -> FieldResult<Vec<Ingredient>> {
-        get_ingredient(database, &id)
+    fn ingredient(id: String) -> FieldResult<Vec<Ingredient>> {
+        get_ingredient(&id)
     }
 }
 
