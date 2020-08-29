@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 // Ingredient type
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Ingredient {
     pub(crate) id: String,
