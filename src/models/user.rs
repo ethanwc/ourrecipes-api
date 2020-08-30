@@ -1,30 +1,9 @@
-use super::ingredient::Ingredient;
-use crate::services::ingredient::get_ingredient;
+use super::{listitem::ListItem, recipe::Recipe, review::Review};
+use crate::services::{recipe::get_recipe, review::get_review, user::get_user};
 use serde::{Deserialize, Serialize};
 
-// #[derive(Serialize, Deserialize, Debug)]
-// pub struct Ingredient3 {
-//     pub(crate) id: String,
-//     pub(crate) name: String,
-//     pub(crate) amount: i32,
-//     pub(crate) unit: String,
-// }
-
-// #[derive(Serialize, Deserialize, juniper::GraphQLObject)]
-// pub struct Person {
-//     name: String,
-//     age: i32,
-// }
-
-// #[derive(Serialize, Deserialize, juniper::GraphQLObject)]
-// struct Ingredient2 {
-//     address: Option<String>,  // Converted into String (nullable)
-//     inhabitants: Vec<Person>, // Converted into [Person!]!
-// }
-
 // User type
-// #[derive(Serialize, Deserialize, juniper::GraphQLObject)]
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 
 pub struct User {
     pub id: String,
@@ -32,15 +11,14 @@ pub struct User {
     pub email: String,
     pub photo: String,
     pub bio: String,
-    // creationDate: String,
-    // pub ingredients: Vec<Ingredient>,
+    pub creationDate: String,
     // groups: Vec<String>,
     pub bookmarks: Vec<String>,
-    // shoppinglist: Vec<String>,
-    followers: Vec<String>,
-    following: Vec<String>,
-    // reviews: Vec<String>,
-    // recipes: Vec<String>,
+    pub shoppinglist: Vec<ListItem>,
+    pub followers: Vec<String>,
+    pub following: Vec<String>,
+    pub reviews: Vec<String>,
+    pub recipes: Vec<String>,
     pub pictures: Vec<String>,
 }
 
@@ -57,8 +35,7 @@ impl User {
         &self.id
     }
     pub fn name(&self) -> &str {
-        // &self.name
-        "name_select_test"
+        &self.name
     }
     pub fn email(&self) -> &str {
         &self.email
@@ -69,44 +46,30 @@ impl User {
     pub fn bio(&self) -> &str {
         &self.bio
     }
-    // pub fn creationDate(&self) -> &str {
-    //     &self.creationDate
-    // }
-    // pub fn ingredients(&self) -> Vec<Ingredient> {
-    //     // get_ingredient("157895bd-d323-48bb-8d20-7d251631a230").unwrap()
-    //     // vec![
-    //     //     Person {
-    //     //         age: 123,
-    //     //         name: "asdf".to_string(),
-    //     //     },
-    //     //     Person {
-    //     //         age: 123,
-    //     //         name: "asdf".to_string(),
-    //     //     },
-    //     // ]
-    //     self.ingredients.to_owned()
-    // }
-    // pub fn recipes(&self) -> Vec<String> {
-    //     self.recipes.to_owned()
-    // }
+    pub fn creationDate(&self) -> &str {
+        &self.creationDate
+    }
+    pub fn recipes(&self) -> Vec<Recipe> {
+        get_recipe(self.recipes.to_owned()).unwrap()
+    }
     // pub fn groups(&self) -> Vec<String> {
     //     self.recipes.to_owned()
     // }
     pub fn bookmarks(&self) -> Vec<String> {
         self.bookmarks.to_owned()
     }
-    // pub fn shoppinglist(&self) -> Vec<String> {
-    //     self.shoppinglist.to_owned()
-    // }
-    pub fn followers(&self) -> Vec<String> {
-        self.followers.to_owned()
+    pub fn shoppinglist(&self) -> Vec<ListItem> {
+        self.shoppinglist.to_owned()
     }
-    pub fn following(&self) -> Vec<String> {
-        self.following.to_owned()
+    pub fn followers(&self) -> Vec<User> {
+        get_user(self.followers.to_owned()).unwrap()
     }
-    // pub fn reviews(&self) -> Vec<String> {
-    //     self.reviews.to_owned()
-    // }
+    pub fn following(&self) -> Vec<User> {
+        get_user(self.following.to_owned()).unwrap()
+    }
+    pub fn reviews(&self) -> Vec<Review> {
+        get_review(self.reviews.to_owned()).unwrap()
+    }
     pub fn pictures(&self) -> Vec<String> {
         self.pictures.to_owned()
     }

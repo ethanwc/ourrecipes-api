@@ -2,11 +2,16 @@ use crate::{
     database::Database,
     models::{
         recipe::{NewRecipe, Recipe},
+        review::Review,
         user::User,
     },
     services::{
-        recipe::create_recipe,
-        user::{create_photo, delete_photo, follow, update_bio, update_picture, create_bookmark, delete_bookmark},
+        recipe::{create_recipe, get_recipe},
+        review::get_review,
+        user::{
+            create_bookmark, create_photo, delete_bookmark, delete_photo, follow, update_bio,
+            update_picture,
+        },
         user::{get_user, unfollow},
     },
 };
@@ -21,9 +26,17 @@ pub struct Query;
     Scalar = juniper::DefaultScalarValue,
 )]
 impl Query {
-    #[graphql(arguments(id(description = "id of the user")))]
-    fn user(id: String) -> FieldResult<Vec<User>> {
-        get_user(&id)
+    #[graphql(arguments(id(description = "ids of the users")))]
+    fn user(ids: Vec<String>) -> FieldResult<Vec<User>> {
+        get_user(ids)
+    }
+    #[graphql(arguments(id(description = "ids of the recipes")))]
+    fn recipe(ids: Vec<String>) -> FieldResult<Vec<Recipe>> {
+        get_recipe(ids)
+    }
+    #[graphql(arguments(id(description = "ids of the reviews")))]
+    fn review(ids: Vec<String>) -> FieldResult<Vec<Review>> {
+        get_review(ids)
     }
 }
 

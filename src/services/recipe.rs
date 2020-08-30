@@ -49,27 +49,29 @@ pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, Fie
         println!("Error converting the BSON object into a MongoDB document");
         Err("Error converting the BSON object into a MongoDB document")?
     }
+}
 
-    // if let bson::Bson::Document(document) = serialized_recipe {
-    //     recipe_collection.insert_one(document, None)?;
-    //     let recipe_document = recipe_collection
-    //         .find_one(Some(doc! { "id" => "asdf" }), None)?
-    //         .expect("Document not found");
+/**
+ * Returns recipe(s)
+ */
+pub fn get_recipe(ids: Vec<String>) -> Result<Vec<Recipe>, FieldError> {
+    let coll = collection("recipe");
+    let filter = doc! {"id": {"$in": ids}};
 
-    //     let recipe = bson::from_bson(bson::Bson::Document(recipe_document))?;
-    // }
-    // let user_collection = collection("user");
-    // let filter = doc! {"id" : user_id};
-    // let update = doc! {"$addToSet": {"recipes": "todo: new recipeid1234asdf"}};
+    let cursor = coll.find(filter, None).unwrap();
 
-    // let user_document = user_collection
-    //     .find_one_and_update(filter, update, None)
-    //     .expect("Failed to create recipe");
+    let mut results: Vec<Recipe> = vec![];
 
-    //     let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
-
-    // Ok(Recipe {
-    //     id: "a".to_string(),
-    //     name: "a".to_string()
-    // })
+    for result in cursor {
+        match result {
+            Ok(doc) => {
+                let recipe: Option<Recipe> = bson::from_bson(bson::Bson::Document(doc)).ok();
+                results.push(recipe.unwrap());
+            }
+            Err(error) => {
+                println!("Error to find doc: {}", error);
+            }
+        }
+    }
+    Ok(results)
 }

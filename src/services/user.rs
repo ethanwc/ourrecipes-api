@@ -5,9 +5,10 @@ use juniper::FieldError;
 /**
  * Returns user(s)
  */
-pub fn get_user(id: &str) -> Result<Vec<User>, FieldError> {
+pub fn get_user(ids: Vec<String>) -> Result<Vec<User>, FieldError> {
     let coll = collection("user");
-    let filter = doc! {"id" : id};
+    let filter = doc! {"id": {"$in": ids}};
+
     let cursor = coll.find(filter, None).unwrap();
 
     let mut results: Vec<User> = vec![];
