@@ -28,40 +28,6 @@ pub fn get_user(id: &str) -> Result<Vec<User>, FieldError> {
 }
 
 /**
- * User bookmarks a recipe
- */
-pub fn create_bookmark(user_id: &str, bookmark_id: &str) -> Result<User, FieldError> {
-    let coll = collection("user");
-    let filter = doc! {"id" : user_id};
-    let update = doc! {"$addToSet": {"bookmarks": bookmark_id}};
-
-    let user_document = coll
-        .find_one_and_update(filter, update, None)
-        .expect("Failed to create bookmark");
-
-    let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
-
-    Ok(user)
-}
-
-/**
- * User unbookmarks a recipe
- */
-pub fn delete_bookmark(user_id: &str, bookmark_id: &str) -> Result<User, FieldError> {
-    let coll = collection("user");
-    let filter = doc! {"id" : user_id};
-    let update = doc! {"$pull": {"bookmarks": bookmark_id}};
-
-    let user_document = coll
-        .find_one_and_update(filter, update, None)
-        .expect("Failed to remove bookmark");
-
-    let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
-
-    Ok(user)
-}
-
-/**
  * User updates profile picture
  */
 pub fn update_picture(user_id: &str, photo_uri: &str) -> Result<User, FieldError> {
@@ -80,20 +46,56 @@ pub fn update_picture(user_id: &str, photo_uri: &str) -> Result<User, FieldError
 }
 
 /**
+ * User bookmarks a recipe
+ */
+pub fn create_bookmark(user_id: &str, bookmark_id: &str) -> Result<User, FieldError> {
+    let coll = collection("user");
+    let filter = doc! {"id" : user_id};
+    let update = doc! {"$addToSet": {"bookmarks": bookmark_id}};
+    coll.update_one(filter.clone(), update, None)
+        .expect("Failed to create bookmark");
+
+    // Get user after update
+    let user_document = coll
+        .find_one(filter.clone(), None)
+        .expect("Failed to create bookmark");
+    let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
+    Ok(user)
+}
+
+/**
+* User unbookmarks a recipe
+*/
+pub fn delete_bookmark(user_id: &str, bookmark_id: &str) -> Result<User, FieldError> {
+    let coll = collection("user");
+    let filter = doc! {"id" : user_id};
+    let update = doc! {"$pull": {"bookmarks": bookmark_id}};
+    coll.update_one(filter.clone(), update, None)
+        .expect("Failed to remove bookmark");
+
+    // Get user after update
+    let user_document = coll
+        .find_one(filter.clone(), None)
+        .expect("Failed to remove bookmark");
+    let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
+    Ok(user)
+}
+
+/**
  * User adds a photo
  */
 pub fn create_photo(user_id: &str, photo_uri: &str) -> Result<User, FieldError> {
     let coll = collection("user");
-    let user_filter = doc! {"id" : user_id};
-    // User adds photo
-    let user_update = doc! {"$addToSet": {"pictures": photo_uri}};
+    let filter = doc! {"id" : user_id};
+    let update = doc! {"$addToSet": {"pictures": photo_uri}};
+    coll.update_one(filter.clone(), update, None)
+        .expect("Failed to create photo");
 
+    // Get user after update
     let user_document = coll
-        .find_one_and_update(user_filter, user_update, None)
-        .expect("Failed to add picture");
-
+        .find_one(filter.clone(), None)
+        .expect("Failed to create photo");
     let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
-
     Ok(user)
 }
 
@@ -102,16 +104,16 @@ pub fn create_photo(user_id: &str, photo_uri: &str) -> Result<User, FieldError> 
  */
 pub fn delete_photo(user_id: &str, photo_uri: &str) -> Result<User, FieldError> {
     let coll = collection("user");
-    let user_filter = doc! {"id" : user_id};
-    // User deletes photo
-    let user_update = doc! {"$pull": {"pictures": photo_uri}};
+    let filter = doc! {"id" : user_id};
+    let update = doc! {"$pull": {"pictures": photo_uri}};
+    coll.update_one(filter.clone(), update, None)
+        .expect("Failed to create photo");
 
+    // Get user after update
     let user_document = coll
-        .find_one_and_update(user_filter, user_update, None)
-        .expect("Failed to delete picture");
-
+        .find_one(filter.clone(), None)
+        .expect("Failed to create photo");
     let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
-
     Ok(user)
 }
 
@@ -120,16 +122,16 @@ pub fn delete_photo(user_id: &str, photo_uri: &str) -> Result<User, FieldError> 
  */
 pub fn update_bio(user_id: &str, bio: &str) -> Result<User, FieldError> {
     let coll = collection("user");
-    let user_filter = doc! {"id" : user_id};
-    // User follows someone
-    let user_update = doc! {"$set": {"bio": bio}};
-
-    let user_document = coll
-        .find_one_and_update(user_filter, user_update, None)
+    let filter = doc! {"id" : user_id};
+    let update = doc! {"$set": {"bio": bio}};
+    coll.update_one(filter.clone(), update, None)
         .expect("Failed to update bio");
 
+    // Get user after update
+    let user_document = coll
+        .find_one(filter.clone(), None)
+        .expect("Failed to update bio");
     let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
-
     Ok(user)
 }
 
@@ -144,12 +146,18 @@ pub fn follow(user_id: &str, follow_id: &str) -> Result<User, FieldError> {
     let user_update = doc! {"$addToSet": {"following": "testfollow"}};
     let follow_update = doc! {"$addToSet": {"followers": "testfollow"}};
 
-    let user_document = coll
-        .find_one_and_update(user_filter, user_update, None)
-        .expect("Failed to follow");
-
+    // Update followed user followers
     coll.find_one_and_update(follow_filter, follow_update, None)
-        .expect("Failed to follow");
+        .expect("Failed to follow target");
+
+    // Update user following list
+    coll.update_one(user_filter.clone(), user_update, None)
+        .expect("Failed to follow via user");
+
+    // Return updated user
+    let user_document = coll
+        .find_one(user_filter.clone(), None)
+        .expect("Failed to get user");
 
     let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
 
@@ -162,17 +170,23 @@ pub fn follow(user_id: &str, follow_id: &str) -> Result<User, FieldError> {
 pub fn unfollow(user_id: &str, unfollow_id: &str) -> Result<User, FieldError> {
     let coll = collection("user");
     let user_filter = doc! {"id" : user_id};
-    let unfollow_filter = doc! {"id" : unfollow_id};
-    // User unfollows someone
+    let follow_filter = doc! {"id" : unfollow_id};
+    // User follows someone
     let user_update = doc! {"$pull": {"following": "testfollow"}};
-    let unfollow_update = doc! {"$pull": {"followers": "testfollow"}};
+    let follow_update = doc! {"$pull": {"followers": "testfollow"}};
 
+    // Update followed user followers
+    coll.find_one_and_update(follow_filter, follow_update, None)
+        .expect("Failed to unfollow target");
+
+    // Update user following list
+    coll.update_one(user_filter.clone(), user_update, None)
+        .expect("Failed to unfollow via user");
+
+    // Return updated user
     let user_document = coll
-        .find_one_and_update(user_filter, user_update, None)
-        .expect("Failed to unfollow");
-
-    coll.find_one_and_update(unfollow_filter, unfollow_update, None)
-        .expect("Failed to unfollow");
+        .find_one(user_filter.clone(), None)
+        .expect("Failed to get user");
 
     let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
 

@@ -1,11 +1,13 @@
 use crate::{
     database::Database,
     models::{
-        user::User, recipe::{Recipe, NewRecipe},
+        recipe::{NewRecipe, Recipe},
+        user::User,
     },
     services::{
-        user::{create_bookmark, create_photo, delete_photo, follow, update_bio, update_picture},
-        user::{get_user, unfollow}, recipe::create_recipe,
+        recipe::create_recipe,
+        user::{create_photo, delete_photo, follow, update_bio, update_picture, create_bookmark, delete_bookmark},
+        user::{get_user, unfollow},
     },
 };
 
@@ -23,10 +25,6 @@ impl Query {
     fn user(id: String) -> FieldResult<Vec<User>> {
         get_user(&id)
     }
-    // #[graphql(arguments(id(description = "id of the ingredient")))]
-    // fn ingredient(id: String) -> FieldResult<Vec<Ingredient>> {
-    //     get_ingredient(&id)
-    // }
 }
 
 // Mutation object query for api
@@ -39,6 +37,9 @@ pub struct MutationRoot;
 impl MutationRoot {
     fn create_bookmark(user_id: String, recipe_id: String) -> FieldResult<User> {
         create_bookmark(&user_id, &recipe_id)
+    }
+    fn delete_bookmark(user_id: String, recipe_id: String) -> FieldResult<User> {
+        delete_bookmark(&user_id, &recipe_id)
     }
     fn create_photo(user_id: String, photo_uri: String) -> FieldResult<User> {
         create_photo(&user_id, &photo_uri)

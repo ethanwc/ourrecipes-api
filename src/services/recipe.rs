@@ -3,7 +3,6 @@ use crate::{
     models::{
         ingredient::Ingredient,
         recipe::{NewRecipe, Recipe},
-        user::User,
     },
 };
 use bson::doc;
@@ -27,8 +26,6 @@ pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, Fie
         })
     }
 
-
-
     let recipe = Recipe {
         id: Uuid::new_v4().to_string(),
         name: new_recipe.name,
@@ -38,7 +35,6 @@ pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, Fie
     // let serialized_member = bson::to_bson(&recipe)?;
     let coll = collection("recipe");
     let serialized_recipe = bson::to_bson(&recipe)?;
-
 
     if let bson::Bson::Document(document) = serialized_recipe {
         coll.insert_one(document, None)?;
@@ -70,9 +66,7 @@ pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, Fie
     //     .find_one_and_update(filter, update, None)
     //     .expect("Failed to create recipe");
 
-        
     //     let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
-        
 
     // Ok(Recipe {
     //     id: "a".to_string(),
