@@ -2,7 +2,8 @@ use serde::{Deserialize, Serialize};
 
 // Ingredient type
 
-#[derive(Serialize, Deserialize, Debug)]
+// #[derive(Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, juniper::GraphQLObject)]
 pub struct Ingredient {
     pub(crate) id: String,
     pub(crate) name: String,
@@ -17,18 +18,18 @@ pub struct NewIngredient {
     pub unit: String,
 }
 
-#[juniper::object(description = "A ingredient")]
-impl Ingredient {
-    pub fn id(&self) -> &str {
-        &self.id
-    }
-    pub fn name(&self) -> &str {
-        &self.name
-    }
-    pub fn amount(&self) -> i32 {
-        self.amount
-    }
-    pub fn unit(&self) -> &str {
-        &self.unit
-    }
-}
+// #[juniper::object(description = "A ingredient")]
+// impl Ingredient {
+//     pub fn id(&self) -> &str {
+//         &self.id
+//     }
+//     pub fn name(&self) -> &str {
+//         &self.name
+//     }
+//     pub fn amount(&self) -> i32 {
+//         self.amount
+//     }
+//     pub fn unit(&self) -> &str {
+//         &self.unit
+//     }
+// }

@@ -43,7 +43,7 @@ pub fn get_ingredient(id: &str) -> Result<Vec<Ingredient>, FieldError> {
             Ok(doc) => {
                 let ingredient: Option<Ingredient> =
                     bson::from_bson(bson::Bson::Document(doc)).ok();
-                println!("res: {:?}", ingredient);
+                // println!("res: {:?}", ingredient);
                 results.push(ingredient.unwrap());
             }
             Err(error) => {

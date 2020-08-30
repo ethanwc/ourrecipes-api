@@ -10,11 +10,11 @@ use serde::{Deserialize, Serialize};
 //     pub(crate) unit: String,
 // }
 
-#[derive(Serialize, Deserialize, juniper::GraphQLObject)]
-pub struct Person {
-    name: String,
-    age: i32,
-}
+// #[derive(Serialize, Deserialize, juniper::GraphQLObject)]
+// pub struct Person {
+//     name: String,
+//     age: i32,
+// }
 
 // #[derive(Serialize, Deserialize, juniper::GraphQLObject)]
 // struct Ingredient2 {
@@ -27,13 +27,13 @@ pub struct Person {
 #[derive(Serialize, Deserialize)]
 
 pub struct User {
-    id: String,
-    name: String,
-    email: String,
-    photo: String,
+    pub id: String,
+    pub name: String,
+    pub(crate) email: String,
+    pub photo: String,
     // bio: String,
     // creationDate: String,
-    ingredients: Vec<Person>,
+    pub ingredients: Vec<Ingredient>,
     // groups: Vec<String>,
     // bookmarks: Vec<String>,
     // shoppinglist: Vec<String>,
@@ -44,7 +44,7 @@ pub struct User {
     // pictures: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, juniper::GraphQLInputObject)]
+#[derive(Serialize, Deserialize, juniper::GraphQLInputObject, Debug)]
 pub struct NewUser {
     name: String,
     email: String,
@@ -72,18 +72,19 @@ impl User {
     // pub fn creationDate(&self) -> &str {
     //     &self.creationDate
     // }
-    pub fn ingredients(&self) -> Vec<Person> {
+    pub fn ingredients(&self) -> Vec<Ingredient> {
         // get_ingredient("157895bd-d323-48bb-8d20-7d251631a230").unwrap()
-        vec![
-            Person {
-                age: 123,
-                name: "asdf".to_string(),
-            },
-            Person {
-                age: 123,
-                name: "asdf".to_string(),
-            },
-        ]
+        // vec![
+        //     Person {
+        //         age: 123,
+        //         name: "asdf".to_string(),
+        //     },
+        //     Person {
+        //         age: 123,
+        //         name: "asdf".to_string(),
+        //     },
+        // ]
+        self.ingredients.to_owned()
     }
     // pub fn recipes(&self) -> Vec<String> {
     //     self.recipes.to_owned()

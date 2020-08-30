@@ -2,12 +2,12 @@ use crate::{
     database::Database,
     models::{
         ingredient::{Ingredient, NewIngredient},
-        user::User,
+        user::User, recipe::{Recipe, NewRecipe},
     },
     services::{
         ingredient::{create_ingredient, get_ingredient},
         user::{create_bookmark, create_photo, delete_photo, follow, update_bio, update_picture},
-        user::{get_user, unfollow},
+        user::{get_user, unfollow}, recipe::create_recipe,
     },
 };
 
@@ -25,10 +25,10 @@ impl Query {
     fn user(id: String) -> FieldResult<Vec<User>> {
         get_user(&id)
     }
-    #[graphql(arguments(id(description = "id of the ingredient")))]
-    fn ingredient(id: String) -> FieldResult<Vec<Ingredient>> {
-        get_ingredient(&id)
-    }
+    // #[graphql(arguments(id(description = "id of the ingredient")))]
+    // fn ingredient(id: String) -> FieldResult<Vec<Ingredient>> {
+    //     get_ingredient(&id)
+    // }
 }
 
 // Mutation object query for api
@@ -62,5 +62,8 @@ impl MutationRoot {
     }
     fn unfollow_user(user_id: String, follow_id: String) -> FieldResult<User> {
         unfollow(&user_id, &follow_id)
+    }
+    fn create_recipe(user_id: String, recipe: NewRecipe) -> FieldResult<Recipe> {
+        create_recipe(&user_id, recipe)
     }
 }
