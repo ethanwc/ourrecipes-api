@@ -1,11 +1,9 @@
 use crate::{
     database::Database,
     models::{
-        ingredient::{Ingredient, NewIngredient},
         user::User, recipe::{Recipe, NewRecipe},
     },
     services::{
-        ingredient::{create_ingredient, get_ingredient},
         user::{create_bookmark, create_photo, delete_photo, follow, update_bio, update_picture},
         user::{get_user, unfollow}, recipe::create_recipe,
     },
@@ -39,9 +37,6 @@ pub struct MutationRoot;
     Scalar = juniper::DefaultScalarValue,
 )]
 impl MutationRoot {
-    fn create_ingredient(new_ingredient: NewIngredient) -> FieldResult<Ingredient> {
-        create_ingredient(new_ingredient)
-    }
     fn create_bookmark(user_id: String, recipe_id: String) -> FieldResult<User> {
         create_bookmark(&user_id, &recipe_id)
     }

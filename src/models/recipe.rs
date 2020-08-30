@@ -1,4 +1,4 @@
-use super::ingredient::Ingredient;
+use super::ingredient::{NewIngredient, Ingredient};
 use serde::{Deserialize, Serialize};
 
 // Recipe type
@@ -25,7 +25,7 @@ pub struct Recipe {
 
 
 
-#[derive(Serialize, Deserialize, juniper::GraphQLInputObject)]
+#[derive(Clone, Serialize, Deserialize, juniper::GraphQLInputObject)]
 pub struct NewRecipe {
     pub name: String,
     // creatorid: String,
@@ -39,7 +39,7 @@ pub struct NewRecipe {
     // category: String,
     // a: Ingredient,
     
-    // ingredients: Vec<Ingredient>,
+    pub ingredients: Vec<NewIngredient>,
     // directions: Vec<String>,
 }
 

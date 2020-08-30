@@ -11,7 +11,7 @@ pub struct Ingredient {
     pub(crate) unit: String,
 }
 
-#[derive(Serialize, Deserialize, juniper::GraphQLInputObject)]
+#[derive(Clone, Serialize, Deserialize, juniper::GraphQLInputObject)]
 pub struct NewIngredient {
     pub name: String,
     pub amount: i32,

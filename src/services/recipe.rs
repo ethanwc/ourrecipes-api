@@ -8,6 +8,7 @@ use crate::{
 };
 use bson::doc;
 use juniper::FieldError;
+use uuid::Uuid;
 
 /**
  * User creates a recipe
@@ -15,17 +16,23 @@ use juniper::FieldError;
 pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, FieldError> {
     // let recipe_collection = collection("recipe");
 
+    let mut id_ingredients = vec![];
+
+    for ingredient in new_recipe.ingredients {
+        id_ingredients.push(Ingredient {
+            amount: ingredient.amount,
+            id: Uuid::new_v4().to_string(),
+            name: ingredient.name,
+            unit: ingredient.unit,
+        })
+    }
+
+
+
     let recipe = Recipe {
-        id: user_id.to_string(),
+        id: Uuid::new_v4().to_string(),
         name: new_recipe.name,
-        ingredients: vec![
-            Ingredient {
-                amount: 1,
-                id: "asdf".to_string(),
-                name: "asdf".to_string(),
-                unit: "a".to_string(),
-            }
-        ],
+        ingredients: id_ingredients,
     };
 
     // let serialized_member = bson::to_bson(&recipe)?;
