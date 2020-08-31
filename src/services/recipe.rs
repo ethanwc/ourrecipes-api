@@ -13,7 +13,6 @@ use uuid::Uuid;
  * User creates a recipe
  */
 pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, FieldError> {
-    // let recipe_collection = collection("recipe");
 
     let mut id_ingredients = vec![];
 
@@ -28,11 +27,11 @@ pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, Fie
 
     let recipe = Recipe {
         id: Uuid::new_v4().to_string(),
+        creatorid: user_id.to_string(),
         name: new_recipe.name,
         ingredients: id_ingredients,
     };
 
-    // let serialized_member = bson::to_bson(&recipe)?;
     let coll = collection("recipe");
     let serialized_recipe = bson::to_bson(&recipe)?;
 

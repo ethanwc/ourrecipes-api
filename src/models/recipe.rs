@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Serialize, Deserialize, juniper::GraphQLObject)]
 pub struct Recipe {
     pub id: String,
-    // creatorid: String,
+    pub creatorid: String,
     pub name: String,
     // imageUrl: String,
     // reviewCount: i32,

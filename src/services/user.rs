@@ -33,16 +33,16 @@ pub fn get_user(ids: Vec<String>) -> Result<Vec<User>, FieldError> {
  */
 pub fn update_picture(user_id: &str, photo_uri: &str) -> Result<User, FieldError> {
     let coll = collection("user");
-    let user_filter = doc! {"id" : user_id};
-    // User adds photo
-    let user_update = doc! {"$set": {"photo": photo_uri}};
+    let filter = doc! {"id" : user_id};
+    let update = doc! {"$set": {"photo": photo_uri}};
+    coll.update_one(filter.clone(), update, None)
+        .expect("Failed to create bookmark");
 
+    // Get user after update
     let user_document = coll
-        .find_one_and_update(user_filter, user_update, None)
-        .expect("Failed to update profile picture");
-
+        .find_one(filter.clone(), None)
+        .expect("Failed to update profile photo");
     let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
-
     Ok(user)
 }
 
@@ -108,12 +108,12 @@ pub fn delete_photo(user_id: &str, photo_uri: &str) -> Result<User, FieldError> 
     let filter = doc! {"id" : user_id};
     let update = doc! {"$pull": {"pictures": photo_uri}};
     coll.update_one(filter.clone(), update, None)
-        .expect("Failed to create photo");
+        .expect("Failed to delete photo");
 
     // Get user after update
     let user_document = coll
         .find_one(filter.clone(), None)
-        .expect("Failed to create photo");
+        .expect("Failed to delete photo");
     let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
     Ok(user)
 }

@@ -1,6 +1,6 @@
 use crate::{
     collection,
-    models::review::{NewReview, Review},
+    models::{user::User, review::{NewReview, Review}},
 };
 use bson::doc;
 use juniper::FieldError;
@@ -67,4 +67,27 @@ pub fn get_review(ids: Vec<String>) -> Result<Vec<Review>, FieldError> {
     Ok(results)
 }
 
-// also need delete review
+/**
+* User deletes a review
+*/
+pub fn delete_review(user_id: &str, review_id: &str) -> Result<User, FieldError> {
+    
+    // Delete review from reviews collection
+    let review_coll = collection("review");
+    let review_filter = doc! {"id" : user_id};
+    review_coll.delete_one(review_filter, None).expect("Failed to delete review");
+    
+    // Delete review id from user's reviews
+    let user_coll = collection("user");
+    let user_filter = doc! {"id" : user_id};
+    let update = doc! {"$pull": {"bookmarks": review_id}};
+    user_coll.update_one(user_filter.clone(), update, None)
+        .expect("Failed to remove bookmark");
+
+    // Get user after update
+    let user_document = user_coll
+        .find_one(user_filter.clone(), None)
+        .expect("Failed to remove bookmark");
+    let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
+    Ok(user)
+}
