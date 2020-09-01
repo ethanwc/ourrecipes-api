@@ -98,7 +98,7 @@ fn create_mongo_client() -> Client {
 }
 
 fn collection(coll_name: &str) -> Collection {
-    MONGO.database("collection").collection(coll_name)
+    MONGO.database("ourrecipes").collection(coll_name)
 }
 
 pub fn rocket() -> Rocket {
