@@ -1,5 +1,5 @@
 use crate::{
-    database::Database,
+    context::Context,
     models::{
         recipe::{NewRecipe, Recipe},
         review::Review,
@@ -13,16 +13,16 @@ use crate::{
             update_picture,
         },
         user::{get_user, unfollow},
-    },
-};
+    }};
 
-use juniper::FieldResult;
+use juniper::{FieldResult, graphql_value};
+use juniper::FieldError;
 
 // The root query object of the schema
 pub struct Query;
 
 #[juniper::object(
-    Context = Database,
+    Context = Context,
     Scalar = juniper::DefaultScalarValue,
 )]
 impl Query {
@@ -44,12 +44,19 @@ impl Query {
 pub struct MutationRoot;
 
 #[juniper::object(
-    Context = Database,
+    Context = Context,
     Scalar = juniper::DefaultScalarValue,
 )]
 impl MutationRoot {
-    fn create_bookmark(user_id: String, recipe_id: String) -> FieldResult<User> {
-        create_bookmark(&user_id, &recipe_id)
+    fn create_bookmark(context: &Context, jwt: String, user_id: String, recipe_id: String) -> FieldResult<User> {
+        if context.to_owned().authorize(jwt) {
+            create_bookmark(&user_id, &recipe_id)
+        } else {
+            Err(FieldError::new(
+                "Auth declined",
+                graphql_value!({ "access_declined": "Connection refused" })
+            ))
+        }
     }
     fn delete_bookmark(user_id: String, recipe_id: String) -> FieldResult<User> {
         delete_bookmark(&user_id, &recipe_id)
