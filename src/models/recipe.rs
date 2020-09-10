@@ -1,4 +1,4 @@
-use super::ingredient::{Ingredient, NewIngredient};
+use super::{ingredient::{Ingredient, NewIngredient}, direction::Direction, direction::NewDirection};
 use serde::{Deserialize, Serialize};
 
 // Recipe type
@@ -7,33 +7,31 @@ pub struct Recipe {
     pub id: String,
     pub creatorid: String,
     pub name: String,
-    // imageUrl: String,
-    // reviewCount: i32,
-    // reviewRating: i32,
-    // creationDate: String,
-    // prepTime: String,
-    // cookTime: String,
-    // servingSize: i32,
-    // category: String,
+    pub description: String,
+    pub imageUrl: String,
+    pub reviewCount: i32,
+    pub reviewRating: i32,
+    pub creationDate: String,
+    pub prepTime: String,
+    pub cookTime: String,
+    pub servingSize: String,
+    pub category: String,
     pub ingredients: Vec<Ingredient>,
-    // directions: Vec<String>,
-    // reviews: Vec<String>,
-    // reviewDistribution: Vec<i32>,
+    pub directions: Vec<Direction>,
+    pub reviews: Vec<String>,
+    pub reviewDistribution: Vec<i32>,
 }
 
 #[derive(Clone, Serialize, Deserialize, juniper::GraphQLInputObject)]
 pub struct NewRecipe {
     pub name: String,
-    // creatorid: String,
-    // creationDate: String,
-    // imageUrl: String,
-    // reviewCount: i32,
-    // reviewRating: i32,
-    // prepTime: String,
-    // cookTime: String,
-    // servingSize: i32,
-    // category: String,
-    // a: Ingredient,
+    pub description: String,
+    pub creationDate: String,
+    pub imageUrl: String,
+    pub prepTime: String,
+    pub cookTime: String,
+    pub servingSize: String,
+    pub category: String,
     pub ingredients: Vec<NewIngredient>,
-    // directions: Vec<String>,
+    pub directions: Vec<NewDirection>,
 }

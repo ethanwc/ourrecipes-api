@@ -22,6 +22,11 @@ fn graphiql() -> content::Html<String> {
     juniper_rocket::graphiql_source("/graphql")
 }
 
+#[rocket::get("/test")]
+fn test() -> String {
+    "worked".to_string()
+}
+
 #[rocket::get("/graphql?<request>")]
 fn get_graphql_handler(
     context: State<Context>,
@@ -59,6 +64,6 @@ pub fn rocket() -> Rocket {
         .manage(Schema::new(Query, MutationRoot))
         .mount(
             "/",
-            routes![graphiql, get_graphql_handler, post_graphql_handler],
+            routes![graphiql, get_graphql_handler, post_graphql_handler, test],
         )
 }

@@ -11,6 +11,7 @@ pub struct Ingredient {
 
 #[derive(Clone, Serialize, Deserialize, juniper::GraphQLInputObject)]
 pub struct NewIngredient {
+    pub id: String,
     pub name: String,
     pub amount: i32,
     pub unit: String,

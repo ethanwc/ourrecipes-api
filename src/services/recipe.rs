@@ -4,7 +4,7 @@ use crate::{
         ingredient::Ingredient,
         recipe::{NewRecipe, Recipe},
     },
-};
+models::direction::Direction};
 use bson::doc;
 use juniper::FieldError;
 use uuid::Uuid;
@@ -16,12 +16,25 @@ pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, Fie
 
     let mut id_ingredients = vec![];
 
+    // todo, determine if id should be mapped or generated here instead of front end
+
     for ingredient in new_recipe.ingredients {
         id_ingredients.push(Ingredient {
-            amount: ingredient.amount,
             id: Uuid::new_v4().to_string(),
+            amount: ingredient.amount,
             name: ingredient.name,
             unit: ingredient.unit,
+        })
+    }
+
+    let mut id_directions = vec![];
+
+    for direction in new_recipe.directions {
+        id_directions.push(Direction {
+            id: Uuid::new_v4().to_string(),
+            imageUrl: direction.imageUrl,
+            instruction: direction.instruction,
+            step: direction.step,
         })
     }
 
@@ -29,21 +42,40 @@ pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, Fie
         id: Uuid::new_v4().to_string(),
         creatorid: user_id.to_string(),
         name: new_recipe.name,
+        description: new_recipe.description,
         ingredients: id_ingredients,
+        category: new_recipe.category,
+        prepTime: new_recipe.prepTime,
+        cookTime: new_recipe.cookTime,
+        servingSize: new_recipe.servingSize,
+        creationDate: new_recipe.creationDate,
+        directions: id_directions,
+        imageUrl: new_recipe.imageUrl,
+        reviewCount: 0,
+        reviewDistribution: vec![],
+        reviewRating: 0,
+        reviews: vec![],
     };
 
-    let coll = collection("recipe");
+    let mut coll = collection("recipe");
     let serialized_recipe = bson::to_bson(&recipe)?;
 
     if let bson::Bson::Document(document) = serialized_recipe {
         coll.insert_one(document, None)?;
-        //todo: use actual user id
         let recipe_document = coll
-            .find_one(Some(doc! { "id" => recipe.id }), None)?
+            .find_one(Some(doc! { "id" => recipe.to_owned().id }), None)?
             .expect("Document not found");
 
-        let recipe = bson::from_bson(bson::Bson::Document(recipe_document))?;
-        Ok(recipe)
+        let recipe_result = bson::from_bson(bson::Bson::Document(recipe_document))?;
+
+        // Recipe has been created, so insert the id into the user
+        coll = collection("user");
+        let filter = doc! {"id" : user_id};
+        let update = doc! {"$addToSet": {"recipes": recipe.to_owned().id}};
+        coll.update_one(filter.clone(), update, None)
+            .expect("Failed to add recipe to user");
+
+        Ok(recipe_result)
     } else {
         println!("Error converting the BSON object into a MongoDB document");
         Err("Error converting the BSON object into a MongoDB document")?
