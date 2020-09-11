@@ -13,6 +13,7 @@ pub fn create_review(user_id: &str, new_review: NewReview) -> Result<Vec<Review>
     let review = Review {
         id: Uuid::new_v4().to_string(),
         creatorid: user_id.to_string(),
+        recipeid: new_review.recipeid.to_string(),
         review: new_review.review,
         rating: new_review.rating,
     };

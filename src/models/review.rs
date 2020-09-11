@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct Review {
     pub id: String,
     pub creatorid: String,
+    pub recipeid: String,
     pub review: String,
     pub rating: i32,
 }
@@ -12,6 +13,7 @@ pub struct Review {
 #[derive(Clone, Serialize, Deserialize, juniper::GraphQLInputObject)]
 pub struct NewReview {
     pub creatorid: String,
+    pub recipeid: String,
     pub review: String,
     pub rating: i32,
 }
