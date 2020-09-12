@@ -48,9 +48,11 @@ pub struct MutationRoot;
     Scalar = juniper::DefaultScalarValue,
 )]
 impl MutationRoot {
-    fn create_bookmark(context: &Context, jwt: String, user_id: String, recipe_id: String) -> FieldResult<User> {
-        if context.to_owned().authorize(jwt) {
-            create_bookmark(&user_id, &recipe_id)
+    fn create_bookmark(context: &Context, jwt: String, recipe_id: String) -> FieldResult<User> {
+        let authCheck = context.to_owned().authorize(jwt);
+
+        if authCheck.auth {
+            create_bookmark(&authCheck.user_id, &recipe_id)
         } else {
             Err(FieldError::new(
                 "Auth declined",
@@ -67,8 +69,17 @@ impl MutationRoot {
     fn delete_photo(user_id: String, photo_uri: String) -> FieldResult<User> {
         delete_photo(&user_id, &photo_uri)
     }
-    fn update_picture(user_id: String, photo_uri: String) -> FieldResult<User> {
-        update_picture(&user_id, &photo_uri)
+    fn update_picture(context: &Context, jwt: String, photo_uri: String) -> FieldResult<User> {
+        let authCheck = context.to_owned().authorize(jwt);
+
+        if authCheck.auth {
+            update_picture(&authCheck.user_id, &photo_uri)
+        } else {
+            Err(FieldError::new(
+                "Auth declined",
+                graphql_value!({ "access_declined": "Connection refused" })
+            ))
+        }
     }
     fn update_bio(user_id: String, bio: String) -> FieldResult<User> {
         update_bio(&user_id, &bio)
