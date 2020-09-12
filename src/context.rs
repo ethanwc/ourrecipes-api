@@ -22,7 +22,7 @@ async fn check_auth(jwt: &str) -> Result<AuthResult, Error> {
         let res = match v.unwrap().get("cognito:username") {
             Some(x) => AuthResult {
                 auth: authentication,
-                user_id: x.to_string(),
+                user_id: x.as_str().unwrap().to_string(),
             },
             None => unauth,
         };

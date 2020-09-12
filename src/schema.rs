@@ -90,7 +90,16 @@ impl MutationRoot {
     fn unfollow_user(user_id: String, follow_id: String) -> FieldResult<User> {
         unfollow(&user_id, &follow_id)
     }
-    fn create_recipe(user_id: String, recipe: NewRecipe) -> FieldResult<Recipe> {
-        create_recipe(&user_id, recipe)
+    fn create_recipe(context: &Context, jwt: String, recipe: NewRecipe) -> FieldResult<Recipe> {
+        let authCheck = context.to_owned().authorize(jwt);
+
+        if authCheck.auth {
+            create_recipe(&authCheck.user_id, recipe)
+        } else {
+            Err(FieldError::new(
+                "Auth declined",
+                graphql_value!({ "access_declined": "Connection refused" })
+            ))
+        }
     }
 }
