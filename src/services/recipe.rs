@@ -9,6 +9,8 @@ use bson::doc;
 use juniper::FieldError;
 use uuid::Uuid;
 
+use super::user::get_user;
+
 /**
  * User creates a recipe
  */
@@ -87,13 +89,14 @@ pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, Fie
  */
 pub fn get_recipe(ids: Vec<String>) -> Result<Vec<Recipe>, FieldError> {
     let coll = collection("recipe");
-    let filter = doc! {"id": {"$in": ids}};
+    let filter = doc! {"id": {"$in": ids.clone()}};
 
     let cursor = coll.find(filter, None).unwrap();
 
     let mut results: Vec<Recipe> = vec![];
 
     for result in cursor {
+        println!("{:?}", result);
         match result {
             Ok(doc) => {
                 let recipe: Option<Recipe> = bson::from_bson(bson::Bson::Document(doc)).ok();
