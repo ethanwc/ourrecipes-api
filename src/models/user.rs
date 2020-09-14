@@ -55,8 +55,8 @@ impl User {
     // pub fn groups(&self) -> Vec<String> {
     //     self.recipes.to_owned()
     // }
-    pub fn bookmarks(&self) -> Vec<String> {
-        self.bookmarks.to_owned()
+    pub fn bookmarks(&self) -> Vec<Recipe> {
+        get_recipe(self.bookmarks.to_owned()).unwrap()
     }
     pub fn shoppinglist(&self) -> Vec<ListItem> {
         self.shoppinglist.to_owned()

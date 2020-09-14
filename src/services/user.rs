@@ -1,4 +1,4 @@
-use crate::{collection, models::user::User};
+use crate::{collection, models::user::User, models::recipe::Recipe};
 use bson::doc;
 use juniper::FieldError;
 
@@ -49,19 +49,23 @@ pub fn update_picture(user_id: &str, photo_uri: &str) -> Result<User, FieldError
 /**
  * User bookmarks a recipe
  */
-pub fn create_bookmark(user_id: &str, bookmark_id: &str) -> Result<User, FieldError> {
+pub fn create_bookmark(user_id: &str, bookmark_id: &str) -> Result<Recipe, FieldError> {
     let coll = collection("user");
     let filter = doc! {"id" : user_id};
     let update = doc! {"$addToSet": {"bookmarks": bookmark_id}};
     coll.update_one(filter.clone(), update, None)
         .expect("Failed to create bookmark");
 
-    // Get user after update
-    let user_document = coll
-        .find_one(filter.clone(), None)
-        .expect("Failed to create bookmark");
-    let user = bson::from_bson(bson::Bson::Document(user_document.unwrap()))?;
-    Ok(user)
+    // Get recipe after bookmark to display
+    let recipe_coll = collection("recipe");
+    let recipe_filter = doc! {"id" : bookmark_id};
+
+    let recipe_document = recipe_coll
+    .find_one(recipe_filter, None)
+    .expect("Failed to find recipe");
+    let recipe = bson::from_bson(bson::Bson::Document(recipe_document.unwrap()))?;
+
+    Ok(recipe)
 }
 
 /**

@@ -48,7 +48,7 @@ pub struct MutationRoot;
     Scalar = juniper::DefaultScalarValue,
 )]
 impl MutationRoot {
-    fn create_bookmark(context: &Context, jwt: String, recipe_id: String) -> FieldResult<User> {
+    fn create_bookmark(context: &Context, jwt: String, recipe_id: String) -> FieldResult<Recipe> {
         let authCheck = context.to_owned().authorize(jwt);
 
         if authCheck.auth {
@@ -60,8 +60,17 @@ impl MutationRoot {
             ))
         }
     }
-    fn delete_bookmark(user_id: String, recipe_id: String) -> FieldResult<User> {
-        delete_bookmark(&user_id, &recipe_id)
+    fn delete_bookmark(context: &Context, jwt: String, recipe_id: String) -> FieldResult<User> {
+        let authCheck = context.to_owned().authorize(jwt);
+
+        if authCheck.auth {
+            delete_bookmark(&authCheck.user_id, &recipe_id)
+        } else {
+            Err(FieldError::new(
+                "Auth declined",
+                graphql_value!({ "access_declined": "Connection refused" })
+            ))
+        }
     }
     fn create_photo(user_id: String, photo_uri: String) -> FieldResult<User> {
         create_photo(&user_id, &photo_uri)

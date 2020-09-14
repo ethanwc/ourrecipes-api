@@ -54,7 +54,7 @@ pub fn create_recipe(user_id: &str, new_recipe: NewRecipe) -> Result<Recipe, Fie
         directions: id_directions,
         imageUrl: new_recipe.imageUrl,
         reviewCount: 0,
-        reviewDistribution: vec![],
+        reviewDistribution: vec![0; 5],
         reviewRating: 0,
         reviews: vec![],
     };
