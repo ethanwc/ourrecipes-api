@@ -109,3 +109,54 @@ pub fn get_recipe(ids: Vec<String>) -> Result<Vec<Recipe>, FieldError> {
     }
     Ok(results)
 }
+
+/**
+ * Returns all recipe(s)
+ */
+pub fn get_all_recipes() -> Result<Vec<Recipe>, FieldError> {
+    let coll = collection("recipe");
+    let filter = doc! {};
+    let cursor = coll.find(filter, None).unwrap();
+
+    let mut results: Vec<Recipe> = vec![];
+
+    for result in cursor {
+        println!("{:?}", result);
+        match result {
+            Ok(doc) => {
+                let recipe: Option<Recipe> = bson::from_bson(bson::Bson::Document(doc)).ok();
+                results.push(recipe.unwrap());
+            }
+            Err(error) => {
+                println!("Error to find doc: {}", error);
+            }
+        }
+    }
+    Ok(results)
+}
+
+
+/**
+ * Returns recipe(s) from the search
+ */
+pub fn search_recipes(search: String) -> Result<Vec<Recipe>, FieldError> {
+    let coll = collection("recipe");
+    let filter = doc! {"$or": [{"name": search.clone()}, {"category": search.clone()}, {"description": search.clone()}]};
+    let cursor = coll.find(filter, None).unwrap();
+
+    let mut results: Vec<Recipe> = vec![];
+
+    for result in cursor {
+        println!("{:?}", result);
+        match result {
+            Ok(doc) => {
+                let recipe: Option<Recipe> = bson::from_bson(bson::Bson::Document(doc)).ok();
+                results.push(recipe.unwrap());
+            }
+            Err(error) => {
+                println!("Error to find doc: {}", error);
+            }
+        }
+    }
+    Ok(results)
+}

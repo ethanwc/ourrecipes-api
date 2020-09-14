@@ -13,7 +13,7 @@ use crate::{
             update_picture,
         },
         user::{get_user, unfollow},
-    }};
+    }, services::recipe::search_recipes, services::recipe::get_all_recipes};
 
 use juniper::{FieldResult, graphql_value};
 use juniper::FieldError;
@@ -33,6 +33,14 @@ impl Query {
     #[graphql(arguments(id(description = "ids of the recipes")))]
     fn recipe(ids: Vec<String>) -> FieldResult<Vec<Recipe>> {
         get_recipe(ids)
+    }
+    #[graphql(arguments(id(description = "gets all the recipes")))]
+    fn getAllRecipes() -> FieldResult<Vec<Recipe>> {
+        get_all_recipes()
+    }
+    #[graphql(arguments(id(description = "search term for the recipes")))]
+    fn searchRecipe(search: String) -> FieldResult<Vec<Recipe>> {
+        search_recipes(search)
     }
     #[graphql(arguments(id(description = "ids of the reviews")))]
     fn review(ids: Vec<String>) -> FieldResult<Vec<Review>> {
