@@ -148,8 +148,8 @@ pub fn follow(user_id: &str, follow_id: &str) -> Result<User, FieldError> {
     let user_filter = doc! {"id" : user_id};
     let follow_filter = doc! {"id" : follow_id};
     // User follows someone
-    let user_update = doc! {"$addToSet": {"following": "testfollow"}};
-    let follow_update = doc! {"$addToSet": {"followers": "testfollow"}};
+    let user_update = doc! {"$addToSet": {"following": follow_id.clone()}};
+    let follow_update = doc! {"$addToSet": {"followers": follow_id.clone()}};
 
     // Update followed user followers
     coll.find_one_and_update(follow_filter, follow_update, None)
@@ -177,8 +177,8 @@ pub fn unfollow(user_id: &str, unfollow_id: &str) -> Result<User, FieldError> {
     let user_filter = doc! {"id" : user_id};
     let follow_filter = doc! {"id" : unfollow_id};
     // User follows someone
-    let user_update = doc! {"$pull": {"following": "testfollow"}};
-    let follow_update = doc! {"$pull": {"followers": "testfollow"}};
+    let user_update = doc! {"$pull": {"following": unfollow_id.clone()}};
+    let follow_update = doc! {"$pull": {"followers": unfollow_id.clone()}};
 
     // Update followed user followers
     coll.find_one_and_update(follow_filter, follow_update, None)

@@ -101,15 +101,30 @@ impl MutationRoot {
     fn update_bio(user_id: String, bio: String) -> FieldResult<User> {
         update_bio(&user_id, &bio)
     }
-    fn follow_user(user_id: String, follow_id: String) -> FieldResult<User> {
-        follow(&user_id, &follow_id)
+    fn follow_user(context: &Context, jwt: String, follow_id: String) -> FieldResult<User> {
+        let authCheck = context.to_owned().authorize(jwt);
+        if authCheck.auth {
+            follow(&authCheck.user_id, &follow_id)
+        } else {
+            Err(FieldError::new(
+                "Auth declined",
+                graphql_value!({ "access_declined": "Connection refused" })
+            ))
+        }
     }
-    fn unfollow_user(user_id: String, follow_id: String) -> FieldResult<User> {
-        unfollow(&user_id, &follow_id)
+    fn unfollow_user(context: &Context, jwt: String, follow_id: String) -> FieldResult<User> {
+        let authCheck = context.to_owned().authorize(jwt);
+        if authCheck.auth {
+            unfollow(&authCheck.user_id, &follow_id)
+        } else {
+            Err(FieldError::new(
+                "Auth declined",
+                graphql_value!({ "access_declined": "Connection refused" })
+            ))
+        }
     }
     fn create_recipe(context: &Context, jwt: String, recipe: NewRecipe) -> FieldResult<Recipe> {
         let authCheck = context.to_owned().authorize(jwt);
-
         if authCheck.auth {
             create_recipe(&authCheck.user_id, recipe)
         } else {
